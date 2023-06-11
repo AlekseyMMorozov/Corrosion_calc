@@ -466,3 +466,7 @@ notebook.add(tab2, text="Срок службы")
 notebook.grid(row=0, column=0, sticky="nsew")
 
 window.mainloop()
+
+
+#pyinstaller --name==Corrossion_calc Corrossion_calc.py
+#pyinstaller Corrossion_calc.spec
