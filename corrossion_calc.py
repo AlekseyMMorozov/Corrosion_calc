@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import scrolledtext
 
 
 def mm_to_M(mm: float):
@@ -33,9 +34,9 @@ def calc_Uk2(tf1, tf2, tpr):
     return uk2
 
 
-def calc_t_prog_ob1(tf2, totb, Uk1):
+def calc_t_prog_ob1(tf2, totb, uk1):
     t_prog_ob1_entry.focus_set()
-    t_prog_ob1 = (tf2 - totb) / Uk1
+    t_prog_ob1 = (tf2 - totb) / uk1
     return t_prog_ob1
 
 
@@ -54,6 +55,19 @@ def calc_t_usk1(ak, tf2, totb, uk2):
     t_usk1 = ((((2*ak * mm_to_M(tf2 - totb) + mm_y_to_m_s(uk2) ** 2) ** 0.5) - mm_y_to_m_s(uk2))) / ak
     return t_usk1
 
+def fill_text(uk1, uk2, t_prog_ob1, t_prog_ob2, ak, t_usk1):
+    # Очищаем содержимое ScrolledText
+    result_scroll_txt.delete(1.0, END)
+
+    result_scroll_txt.insert(END, f"Cкорость коррозии за весь срок эксплуатации: \n{uk1.get()} мм/год\n")
+    result_scroll_txt.insert(END, f"Cкорость коррозии за период между измерениями толщин стенок:  \n{uk2.get()} мм/год\n")
+    result_scroll_txt.insert(END, f"Остаточный срок службы с учетом скорости коррозии за весь срок эксплуатации:\n"
+                                  f"{t_prog_ob1.get()} лет\n")
+    result_scroll_txt.insert(END, f"Остаточный срок службы с учетом скорости коррозии за период между \n"
+                                  f"последними измерениями: \n{t_prog_ob2.get()}\n лет")
+    result_scroll_txt.insert(END, f"Ускорение скорости коррозии за последний период измерения: \n{ak.get()}м/кв.с\n")
+    result_scroll_txt.insert(END, f"Остаточный срок с учетом ускорения коррозии: \n{t_usk1.get()} с\n")
+
 
 def finish():
     window.destroy()  # ручное закрытие окна и всего приложения
@@ -63,7 +77,7 @@ def finish():
 """Параметры окна"""
 window = Tk()
 window.title("Калькулятор коррозии")
-window.geometry('1300x700')
+window.geometry('1300x800')
 window.resizable(width=False, height=False)
 window.protocol("WM_DELETE_WINDOW", finish)
 
@@ -459,8 +473,22 @@ lbl_t_usk1_si = Label(tab2, text="с", width=10, anchor="w", font=("Arial", 12),
 lbl_t_usk1_si.grid(column=2, row=22, sticky="W")
 
 
-notebook.add(tab1, text="Скорость коррозии")
-notebook.add(tab2, text="Срок службы")
+
+
+"""Окно вывода результатов"""
+result_scroll_txt = scrolledtext.ScrolledText(tab2, width=85, height=10, padx=5, pady=1)
+result_scroll_txt.grid(column=0, row=23)
+
+"""Кнопка сформировать результат"""
+btn_get_res = Button(tab2, text="<<< Сформировать отчет", width=30, font=("Arial", 12), command=lambda:
+fill_text(result_uk1, result_uk2, result_t_prog_ob1, result_t_prog_ob2, result_ak, result_t_usk1))
+btn_get_res.grid(column=1, row=23)
+
+
+
+
+notebook.add(tab1, text="Расчет скорости коррозии")
+notebook.add(tab2, text="Расчет прогнозируемого срока службы")
 
 
 notebook.grid(row=0, column=0, sticky="nsew")
@@ -468,5 +496,5 @@ notebook.grid(row=0, column=0, sticky="nsew")
 window.mainloop()
 
 
-#pyinstaller --name==Corrossion_calc Corrossion_calc.py
-#pyinstaller Corrossion_calc.spec
+#pyinstaller --name==corrossion_calc corrossion_calc.py
+#pyinstaller =corrossion_calc.spec
